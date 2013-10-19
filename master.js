@@ -14,7 +14,7 @@
     for (var _i = 0; 0 <= size ? _i < size : _i > size; 0 <= size ? _i++ : _i--){ _results.push(_i); }
     return _results;
   }).apply(this).map(function() {
-    return 50;
+    return 0;
   });
 
   chunkX = (width / size).floor();
@@ -54,19 +54,20 @@
     var deltaX, deltaY, position, signX, _j, _ref, _ref1, _results1;
     if (active) {
       position = getPosition(e);
-      setValue(position);
       deltaX = position.x - lastPosition.x;
       deltaY = position.y - lastPosition.y;
       signX = deltaX.sign();
       (function() {
         _results1 = [];
-        for (var _j = _ref = lastPosition.x, _ref1 = position.x; _ref <= _ref1 ? _j < _ref1 : _j > _ref1; _ref <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
+        for (var _j = _ref = lastPosition.x, _ref1 = position.x; _ref <= _ref1 ? _j <= _ref1 : _j >= _ref1; _ref <= _ref1 ? _j++ : _j--){ _results1.push(_j); }
         return _results1;
       }).apply(this).map(function(x) {
         var delta, y;
-        delta = position.x - x;
-        y = -((delta * deltaY) / deltaX).floor();
-        console.log(x, y);
+        if (delta = position.x - x) {
+          y = -((delta * deltaY) / deltaX).floor();
+        } else {
+          y = 0;
+        }
         return setValue({
           x: x,
           y: position.y + y
