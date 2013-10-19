@@ -8,7 +8,7 @@ Draw a series of data.
     size = 100
     width = 400
     height = 400
-    series = [0...size].map -> 50
+    series = [0...size].map -> 0
 
     chunkX = (width/size).floor()
     chunkY = (height/size).floor()
@@ -41,22 +41,24 @@ Draw a series of data.
     $(element).on "mousemove", (e) ->
       if active
         position = getPosition(e)
-        setValue(position)
 
         deltaX = position.x - lastPosition.x
         deltaY = position.y - lastPosition.y
         signX = deltaX.sign()
 
-        [lastPosition.x...position.x].map (x) ->
-          delta = position.x - x
-          y = -((delta * deltaY) / deltaX).floor()
-          console.log x, y
+        [lastPosition.x..position.x].map (x) ->
+          if delta = position.x - x
+            y = -((delta * deltaY) / deltaX).floor()
+          else
+            y = 0
 
           setValue
             x: x
             y: position.y + y
-        
+
         lastPosition = position
+
+Get the local position from a mouse event within the canvas.
 
     getPosition = (e) ->
       localPosition(e)
@@ -65,10 +67,15 @@ Draw a series of data.
       x: (x/chunkX).floor()
       y: (y/chunkY).floor()
 
+Set an x,y value of the series.
+
     setValue = ({x, y}) ->
       series[x] = y
 
+      # TODO: Make this an observer?
       redraw(x)
+
+Redraw a specific x value.
 
     redraw = (x) ->
       y = series[x]
@@ -86,6 +93,8 @@ Draw a series of data.
         y: y * chunkY
         width: chunkX
         height: height - y * chunkY
+
+Draw the initial values.
 
     series.map (y, x) ->
       redraw(x)
