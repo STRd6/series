@@ -40,7 +40,7 @@
 size = <span class="number">100</span>
 width = <span class="number">400</span>
 height = <span class="number">400</span>
-series = []
+series = [<span class="number">0.</span>..size].map -&gt; <span class="number">50</span>
 
 chunkX = (width/size).floor()
 chunkY = (height/size).floor()
@@ -100,6 +100,11 @@ $(element).<span class="literal">on</span> <span class="string">"mousemove"</spa
 <span class="function"><span class="title">setValue</span></span> = ({x, y}) -&gt;
   series[x] = y
 
+  redraw(x)
+
+<span class="function"><span class="title">redraw</span></span> = (x) -&gt;
+  y = series[x]
+
   canvas.drawRect
     color: backgroundColor
     x: x * chunkX
@@ -112,7 +117,10 @@ $(element).<span class="literal">on</span> <span class="string">"mousemove"</spa
     x: x * chunkX
     y: y * chunkY
     width: chunkX
-    height: height - y * chunkY</code></pre>
+    height: height - y * chunkY
+
+series.map (y, x) -&gt;
+  redraw(x)</code></pre>
 </div>
         </li>
         
