@@ -24,6 +24,11 @@ Draw a series of data.
     element = canvas.element()
 
     $("body").append element
+    
+    valuesElement = $ "<pre>",
+      text: JSON.stringify(series)
+
+    $("body").append valuesElement
 
     active = false
     lastPosition = null
@@ -80,6 +85,7 @@ Set an x,y value of the series.
 
       # TODO: Make this an observer?
       redraw(x)
+      valuesElement.text JSON.stringify(series)
 
 Redraw a specific x value.
 
