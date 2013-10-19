@@ -40,7 +40,7 @@
     return lastPosition = position;
   });
 
-  $(element).on("mouseup", function(e) {
+  $(document).on("mouseup", function(e) {
     return active = false;
   });
 
@@ -68,10 +68,6 @@
       });
       return lastPosition = position;
     }
-  });
-
-  $(element).on("mouseout", function() {
-    return active = false;
   });
 
   getPosition = function(e) {
