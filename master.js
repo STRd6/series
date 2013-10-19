@@ -1,5 +1,5 @@
 (function() {
-  var PixieCanvas, active, backgroundColor, canvas, chunkX, chunkY, element, foregroundColor, getPosition, height, lastPosition, localPosition, redraw, series, setValue, size, width, _i, _results;
+  var PixieCanvas, active, backgroundColor, canvas, chunkX, chunkY, element, foregroundColor, getPosition, height, lastPosition, localPosition, redraw, series, setValue, size, valuesElement, width, _i, _results;
 
   PixieCanvas = require("pixie-canvas");
 
@@ -33,6 +33,12 @@
   element = canvas.element();
 
   $("body").append(element);
+
+  valuesElement = $("<pre>", {
+    text: JSON.stringify(series)
+  });
+
+  $("body").append(valuesElement);
 
   active = false;
 
@@ -91,7 +97,8 @@
     var x, y;
     x = _arg.x, y = _arg.y;
     series[x] = y;
-    return redraw(x);
+    redraw(x);
+    return valuesElement.text(JSON.stringify(series));
   };
 
   redraw = function(x) {
