@@ -8,7 +8,7 @@ Draw a series of data.
     size = 100
     width = 400
     height = 400
-    series = []
+    series = [0...size].map -> 50
 
     chunkX = (width/size).floor()
     chunkY = (height/size).floor()
@@ -68,6 +68,11 @@ Draw a series of data.
     setValue = ({x, y}) ->
       series[x] = y
 
+      redraw(x)
+
+    redraw = (x) ->
+      y = series[x]
+
       canvas.drawRect
         color: backgroundColor
         x: x * chunkX
@@ -81,6 +86,9 @@ Draw a series of data.
         y: y * chunkY
         width: chunkX
         height: height - y * chunkY
+
+    series.map (y, x) ->
+      redraw(x)
 
 Helpers
 -------
