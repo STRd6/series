@@ -104,7 +104,7 @@ $(element).<span class="literal">on</span> <span class="string">"mousemove"</spa
     color: backgroundColor
     x: x * chunkX
     y: <span class="number">0</span>
-    width: <span class="number">4</span>
+    width: chunkX
     height: height
 
   canvas.drawRect
@@ -112,7 +112,7 @@ $(element).<span class="literal">on</span> <span class="string">"mousemove"</spa
     x: x * chunkX
     y: y * chunkY
     width: chunkX
-    height: height</code></pre>
+    height: height - y * chunkY</code></pre>
 </div>
         </li>
         
