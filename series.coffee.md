@@ -28,6 +28,8 @@ Draw a series of data.
     active = false
     lastPosition = null
 
+When we click within the canvas set the value for the position we clicked at.
+
     $(element).on "mousedown", (e) ->
       active = true
 
@@ -35,8 +37,7 @@ Draw a series of data.
       setValue(position)
       lastPosition = position
 
-    $(document).on "mouseup", (e) ->
-      active = false
+When the mouse moves apply a change for each x value in the intervening positions.
 
     $(element).on "mousemove", (e) ->
       if active
@@ -57,6 +58,11 @@ Draw a series of data.
             y: position.y + y
 
         lastPosition = position
+
+Whenever the mouse button is released, deactivate.
+
+    $(document).on "mouseup", (e) ->
+      active = false
 
 Get the local position from a mouse event within the canvas.
 
