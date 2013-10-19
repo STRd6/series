@@ -57,6 +57,11 @@ element = canvas.element()
 
 $(<span class="string">"body"</span>).append element
 
+valuesElement = $ <span class="string">"&lt;pre&gt;"</span>,
+  text: JSON.stringify(series)
+
+$(<span class="string">"body"</span>).append valuesElement
+
 active = <span class="literal">false</span>
 lastPosition = <span class="literal">null</span></code></pre>
 </div>
@@ -156,7 +161,8 @@ lastPosition = <span class="literal">null</span></code></pre>
   series[x] = y
 
   <span class="comment"># TODO: Make this an observer?</span>
-  redraw(x)</code></pre>
+  redraw(x)
+  valuesElement.text JSON.stringify(series)</code></pre>
 </div>
         </li>
         
