@@ -67,7 +67,7 @@ $(element).<span class="literal">on</span> <span class="string">"mousedown"</spa
   setValue(position)
   lastPosition = position
 
-$(element).<span class="literal">on</span> <span class="string">"mouseup"</span>, (e) -&gt;
+$(document).<span class="literal">on</span> <span class="string">"mouseup"</span>, (e) -&gt;
   active = <span class="literal">false</span>
 
 $(element).<span class="literal">on</span> <span class="string">"mousemove"</span>, (e) -&gt;
@@ -89,9 +89,6 @@ $(element).<span class="literal">on</span> <span class="string">"mousemove"</spa
         y: position.y + y
 
     lastPosition = position
-
-$(element).<span class="literal">on</span> <span class="string">"mouseout"</span>, -&gt;
-  active = <span class="literal">false</span>
 
 <span class="function"><span class="title">getPosition</span></span> = (e) -&gt;
   localPosition(e)
