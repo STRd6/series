@@ -35,7 +35,7 @@ Draw a series of data.
       setValue(position)
       lastPosition = position
 
-    $(element).on "mouseup", (e) ->
+    $(document).on "mouseup", (e) ->
       active = false
 
     $(element).on "mousemove", (e) ->
@@ -57,9 +57,6 @@ Draw a series of data.
             y: position.y + y
         
         lastPosition = position
-
-    $(element).on "mouseout", ->
-      active = false
 
     getPosition = (e) ->
       localPosition(e)
