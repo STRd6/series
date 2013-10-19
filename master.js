@@ -88,7 +88,7 @@
       color: backgroundColor,
       x: x * chunkX,
       y: 0,
-      width: 4,
+      width: chunkX,
       height: height
     });
     return canvas.drawRect({
@@ -96,7 +96,7 @@
       x: x * chunkX,
       y: y * chunkY,
       width: chunkX,
-      height: height
+      height: height - y * chunkY
     });
   };
 
