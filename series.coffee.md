@@ -72,7 +72,7 @@ Draw a series of data.
         color: backgroundColor
         x: x * chunkX
         y: 0
-        width: 4
+        width: chunkX
         height: height
 
       canvas.drawRect
@@ -80,7 +80,7 @@ Draw a series of data.
         x: x * chunkX
         y: y * chunkY
         width: chunkX
-        height: height
+        height: height - y * chunkY
 
 Helpers
 -------
