@@ -46,10 +46,6 @@
     return lastPosition = position;
   });
 
-  $(document).on("mouseup", function(e) {
-    return active = false;
-  });
-
   $(element).on("mousemove", function(e) {
     var deltaX, deltaY, position, signX, _j, _ref, _ref1, _results1;
     if (active) {
@@ -75,6 +71,10 @@
       });
       return lastPosition = position;
     }
+  });
+
+  $(document).on("mouseup", function(e) {
+    return active = false;
   });
 
   getPosition = function(e) {
