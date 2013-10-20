@@ -24,7 +24,7 @@ Draw a series of data.
     element = canvas.element()
 
     $("body").append element
-    
+
     valuesElement = $ "<pre>",
       text: JSON.stringify(series)
 
@@ -85,12 +85,18 @@ Set an x,y value of the series.
 
       # TODO: Make this an observer?
       redraw(x)
-      
-      transformed = DFT(series)
-      
+
+      transformed = DFT(series.map (n) -> [n, 0])
+      inverse = inverseDFT(transformed)
+
       valuesElement.text """
         #{JSON.stringify(series)}
+        
+        DFT
         #{format transformed}
+        
+        Inverse DFT
+        #{format inverse}
       """
 
 Redraw a specific x value.
@@ -131,6 +137,7 @@ Local event position.
       return e
 
 DFT
+
     {cos, sin, pow, E:e, sqrt} = Math
     τ = 2 * Math.PI
 
@@ -140,16 +147,21 @@ DFT
       divRootN = (x) -> x / rootN
 
       [0...N].map (k) ->
-        series.map (x, n) ->
-          theta = -τ / N * k * n
+        series.map ([x, y], n) ->
+          theta = -τ * k * n / N
           [
-            x * cos(theta)
-            x * -sin(theta)
+            x *  cos(theta) + y *  sin(theta)
+            x * -sin(theta) + y * -cos(theta)
           ]
         .reduce((a, b) ->
           [a[0] + b[0], a[1] + b[1]]
         , [0, 0])
         .map divRootN
+
+    inverseDFT = (series) ->
+      do (x = DFT(series)) ->
+        x.push(x.shift())
+        x.reverse()
 
 Format for output
 
