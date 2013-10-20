@@ -1,9 +1,9 @@
 (function() {
-  var PixieCanvas, active, backgroundColor, canvas, chunkX, chunkY, element, foregroundColor, getPosition, height, lastPosition, localPosition, redraw, series, setValue, size, valuesElement, width, _i, _results;
+  var DFT, PixieCanvas, active, backgroundColor, canvas, chunkX, chunkY, cos, e, element, foregroundColor, format, getPosition, height, lastPosition, localPosition, pow, redraw, series, setValue, sin, size, sqrt, valuesElement, whitespace, width, τ, _i, _results;
 
   PixieCanvas = require("pixie-canvas");
 
-  size = 100;
+  size = 10;
 
   width = 400;
 
@@ -94,11 +94,12 @@
   };
 
   setValue = function(_arg) {
-    var x, y;
+    var transformed, x, y;
     x = _arg.x, y = _arg.y;
     series[x] = y;
     redraw(x);
-    return valuesElement.text(JSON.stringify(series));
+    transformed = DFT(series);
+    return valuesElement.text("" + (JSON.stringify(series)) + "\n" + (format(transformed)));
   };
 
   redraw = function(x) {
@@ -130,6 +131,53 @@
     e.localX = e.pageX - parentOffset.left;
     e.localY = e.pageY - parentOffset.top;
     return e;
+  };
+
+  cos = Math.cos, sin = Math.sin, pow = Math.pow, e = Math.E, sqrt = Math.sqrt;
+
+  τ = 2 * Math.PI;
+
+  DFT = function(series) {
+    var N, divRootN, rootN, _j, _results1;
+    N = series.length;
+    rootN = sqrt(N);
+    divRootN = function(x) {
+      return x / rootN;
+    };
+    return (function() {
+      _results1 = [];
+      for (var _j = 0; 0 <= N ? _j < N : _j > N; 0 <= N ? _j++ : _j--){ _results1.push(_j); }
+      return _results1;
+    }).apply(this).map(function(k) {
+      return series.map(function(x, n) {
+        var theta;
+        theta = -τ / N * k * n;
+        return [x * cos(theta), x * -sin(theta)];
+      }).reduce(function(a, b) {
+        return [a[0] + b[0], a[1] + b[1]];
+      }, [0, 0]).map(divRootN);
+    });
+  };
+
+  format = function(series) {
+    return series.map(function(array) {
+      return array.map(function(i) {
+        var v;
+        v = i.toFixed(3);
+        return "" + (whitespace(10 - v.length)) + v;
+      }).join("");
+    }).join("\n");
+  };
+
+  whitespace = function(n) {
+    var _j, _results1;
+    return (function() {
+      _results1 = [];
+      for (var _j = 0; 0 <= n ? _j < n : _j > n; 0 <= n ? _j++ : _j--){ _results1.push(_j); }
+      return _results1;
+    }).apply(this).map(function() {
+      return " ";
+    }).join("");
   };
 
 }).call(this);
