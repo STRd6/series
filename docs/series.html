@@ -163,11 +163,17 @@ lastPosition = <span class="literal">null</span></code></pre>
   <span class="comment"># TODO: Make this an observer?</span>
   redraw(x)
 
-  transformed = DFT(series)
+  transformed = DFT(series.map (n) -&gt; [n, <span class="number">0</span>])
+  inverse = inverseDFT(transformed)
 
   valuesElement.text <span class="string">"""
     <span class="subst">#{JSON.stringify(series)}</span>
+
+    DFT
     <span class="subst">#{format transformed}</span>
+
+    Inverse DFT
+    <span class="subst">#{format inverse}</span>
   """</span></code></pre>
 </div>
         </li>
@@ -265,16 +271,21 @@ lastPosition = <span class="literal">null</span></code></pre>
   <span class="function"><span class="title">divRootN</span></span> = (x) -&gt; x / rootN
 
   [<span class="number">0.</span>..N].map (k) -&gt;
-    series.map (x, n) -&gt;
-      theta = -τ / N * k * n
+    series.map ([x, y], n) -&gt;
+      theta = -τ * k * n / N
       [
-        x * cos(theta)
-        x * -sin(theta)
+        x *  cos(theta) + y *  sin(theta)
+        x * -sin(theta) + y * -cos(theta)
       ]
     .reduce((a, b) -&gt;
       [a[<span class="number">0</span>] + b[<span class="number">0</span>], a[<span class="number">1</span>] + b[<span class="number">1</span>]]
     , [<span class="number">0</span>, <span class="number">0</span>])
-    .map divRootN</code></pre>
+    .map divRootN
+
+<span class="function"><span class="title">inverseDFT</span></span> = (series) -&gt;
+  <span class="keyword">do</span> (x = DFT(series)) -&gt;
+    x.push(x.shift())
+    x.reverse()</code></pre>
 </div>
         </li>
         
