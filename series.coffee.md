@@ -5,7 +5,7 @@ Draw a series of data.
 
     PixieCanvas = require "pixie-canvas"
 
-    size = 100
+    size = 10
     width = 400
     height = 400
     series = [0...size].map -> 0
@@ -85,7 +85,13 @@ Set an x,y value of the series.
 
       # TODO: Make this an observer?
       redraw(x)
-      valuesElement.text JSON.stringify(series)
+      
+      transformed = DFT(series)
+      
+      valuesElement.text """
+        #{JSON.stringify(series)}
+        #{format transformed}
+      """
 
 Redraw a specific x value.
 
@@ -123,3 +129,37 @@ Local event position.
       e.localY = e.pageY - parentOffset.top
 
       return e
+
+DFT
+    {cos, sin, pow, E:e, sqrt} = Math
+    τ = 2 * Math.PI
+
+    DFT = (series) ->
+      N = series.length
+      rootN = sqrt(N)
+      divRootN = (x) -> x / rootN
+
+      [0...N].map (k) ->
+        series.map (x, n) ->
+          theta = -τ / N * k * n
+          [
+            x * cos(theta)
+            x * -sin(theta)
+          ]
+        .reduce((a, b) ->
+          [a[0] + b[0], a[1] + b[1]]
+        , [0, 0])
+        .map divRootN
+
+Format for output
+
+    format = (series) ->
+      series.map (array) ->
+        array.map (i) ->
+          v = i.toFixed(3)
+          "#{whitespace(10 - v.length)}#{v}"
+        .join("")
+      .join("\n")
+
+    whitespace = (n) ->
+      [0...n].map(-> " ").join("")
