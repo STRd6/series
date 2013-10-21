@@ -35,7 +35,7 @@ Draw a series of data.
       text: JSON.stringify(series)
 
     $("body").append valuesElement
-    
+
     $("body").append $ "<style>",
       text: require "./style"
 
@@ -101,10 +101,10 @@ Set an x,y value of the series.
 
       valuesElement.text """
         #{JSON.stringify(series)}
-        
+
         DFT
         #{format transformed}
-        
+
         Inverse DFT
         #{format inverse}
       """

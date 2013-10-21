@@ -6,7 +6,8 @@ Draw sythesis on a canvas.
     {cos, sin, sqrt, min, max} = Math
     τ = 2 * Math.PI
 
-    module.exports = (canvas, series, actual) ->
+    # TODO: Smarter scaling
+    module.exports = (canvas, series, actual, scale=1/20) ->
       n = 100
 
       points = [0..n].map (i) ->
@@ -19,16 +20,16 @@ Draw sythesis on a canvas.
         [x, y]
 
       # Normalize y
-      
+
       yValues = points.map ([x, y]) -> y
-      
+
       minimum = yValues.minimum()
       maximum = yValues.maximum()
       spread = maximum - minimum
 
       specialInvert(points.map ([x, y]) ->
         # Normalize to be between 0 and 1
-        [x / τ, (y - minimum) / spread]
+        [x / τ, y * scale]
       ).map ([x, y]) ->
         canvas.drawCircle
           x: x
@@ -38,7 +39,7 @@ Draw sythesis on a canvas.
 
       # NOTE: y's are all zero because we're getting real values only
       actual.map ([x, y], i) ->
-        [i / actual.length, (x * sqrt(actual.length) - minimum) / spread ]
+        [i / actual.length, x * sqrt(actual.length) * scale]
       .map ([x, y]) ->
         canvas.drawCircle
           x: x
