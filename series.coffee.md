@@ -17,8 +17,6 @@ Draw a series of data.
     backgroundColor = "white"
     foregroundColor = "black"
 
-    coordinateTransform = Matrix.scale(1, -1, Point(0, 200))
-
     # TODO Dynamic width and height ?
     canvas = PixieCanvas
       width: width
@@ -86,8 +84,8 @@ Get the local position from a mouse event within the canvas.
       localPosition(e)
       {localX:x, localY:y} = e
 
-      x: (x/chunkX).floor()
-      y: (y/chunkY).floor()
+      x: (x/chunkX).floor().clamp(0, size-1)
+      y: (y/chunkY).floor().clamp(0, size-1)
 
 Set an x,y value of the series.
 
