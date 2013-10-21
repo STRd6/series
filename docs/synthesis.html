@@ -38,7 +38,8 @@
             <div class="content"><pre><code class="lang-coffeescript">{cos, sin, sqrt, min, max} = Math
 τ = <span class="number">2</span> * Math.PI
 
-module.<span class="function"><span class="title">exports</span></span> = (canvas, series, actual) -&gt;
+<span class="comment"># TODO: Smarter scaling</span>
+module.<span class="function"><span class="title">exports</span></span> = (canvas, series, actual, scale=<span class="number">1</span>/<span class="number">20</span>) -&gt;
   n = <span class="number">100</span>
 
   points = [<span class="number">0.</span>.n].map (i) -&gt;
@@ -60,7 +61,7 @@ module.<span class="function"><span class="title">exports</span></span> = (canva
 
   specialInvert(points.map ([x, y]) -&gt;
     <span class="comment"># Normalize to be between 0 and 1</span>
-    [x / τ, (y - minimum) / spread]
+    [x / τ, y * scale]
   ).map ([x, y]) -&gt;
     canvas.drawCircle
       x: x
@@ -70,7 +71,7 @@ module.<span class="function"><span class="title">exports</span></span> = (canva
 
   <span class="comment"># NOTE: y's are all zero because we're getting real values only</span>
   actual.map ([x, y], i) -&gt;
-    [i / actual.length, (x * sqrt(actual.length) - minimum) / spread ]
+    [i / actual.length, x * sqrt(actual.length) * scale]
   .map ([x, y]) -&gt;
     canvas.drawCircle
       x: x
