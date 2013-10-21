@@ -42,16 +42,13 @@ module.<span class="function"><span class="title">exports</span></span> = (canva
   n = <span class="number">100</span>
 
   points = [<span class="number">0.</span>.n].map (i) -&gt;
-    x = i * τ / (<span class="number">2</span> * n)
+    x = i * τ / n
 
-    y = series.map ([real, imaginary], k) -&gt;
-      real * cos(k * x) + imaginary * sin(k * x)
+    y = series.map ([r, i], k) -&gt;
+      r * cos(k * x) + i * sin(k * x)
     .sum()
 
-    x = (x * <span class="number">2</span> / τ)
-
     [x, y]
-
 
   <span class="comment"># Normalize y</span>
 
@@ -61,16 +58,16 @@ module.<span class="function"><span class="title">exports</span></span> = (canva
   maximum = yValues.maximum()
   spread = maximum - minimum
 
-  points.map ([x, y]) -&gt;
-    [x, (y - minimum) / spread]
-  .map ([x, y]) -&gt;
+  specialInvert(points.map ([x, y]) -&gt;
+    <span class="comment"># Normalize to be between 0 and 1</span>
+    [x / τ, (y - minimum) / spread]
+  ).map ([x, y]) -&gt;
     canvas.drawCircle
       x: x
       y: y
       radius: <span class="number">0.01</span>
       color: <span class="string">"rgb(100, 100, 100)"</span>
 
-  <span class="comment"># TODO: Figure out how to get the correct scaling here</span>
   <span class="comment"># NOTE: y's are all zero because we're getting real values only</span>
   actual.map ([x, y], i) -&gt;
     [i / actual.length, (x * sqrt(actual.length) - minimum) / spread ]
@@ -80,6 +77,35 @@ module.<span class="function"><span class="title">exports</span></span> = (canva
       y: y
       radius: <span class="number">0.01</span>
       color: <span class="string">"rgb(0, 0, 255)"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h2 id="helpers">Helpers</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">specialInvert</span></span> = (series) -&gt;
+  <span class="keyword">do</span> (x = series.copy()) -&gt;
+    x.push(x.shift())
+    x.reverse()</code></pre>
 </div>
         </li>
         

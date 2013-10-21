@@ -60,18 +60,18 @@ element = canvas.element()
 
 $(<span class="string">"body"</span>).append element
 
+synthesisCanvas = PixieCanvas
+  width: width
+  height: height
+$(<span class="string">"body"</span>).append synthesisCanvas.element()
+
 valuesElement = $ <span class="string">"&lt;pre&gt;"</span>,
   text: JSON.stringify(series)
 
 $(<span class="string">"body"</span>).append valuesElement
 
-$(<span class="string">"body"</span>).append $ <span class="string">"&lt;pre&gt;"</span>,
-  text: <span class="string">"TODO: Fix synthesis chart"</span>
-
-synthesisCanvas = PixieCanvas
-  width: width
-  height: height
-$(<span class="string">"body"</span>).append synthesisCanvas.element()
+$(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&gt;"</span>,
+  text: require <span class="string">"./style"</span>
 
 active = <span class="literal">false</span>
 lastPosition = <span class="literal">null</span></code></pre>
