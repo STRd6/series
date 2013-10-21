@@ -28,18 +28,18 @@ Draw a series of data.
 
     $("body").append element
 
+    synthesisCanvas = PixieCanvas
+      width: width
+      height: height
+    $("body").append synthesisCanvas.element()
+
     valuesElement = $ "<pre>",
       text: JSON.stringify(series)
 
     $("body").append valuesElement
     
-    $("body").append $ "<pre>",
-      text: "TODO: Fix synthesis chart"
-    
-    synthesisCanvas = PixieCanvas
-      width: width
-      height: height
-    $("body").append synthesisCanvas.element()
+    $("body").append $ "<style>",
+      text: require "./style"
 
     active = false
     lastPosition = null
