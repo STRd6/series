@@ -49,8 +49,6 @@ chunkY = (height/size).floor()
 backgroundColor = <span class="string">"white"</span>
 foregroundColor = <span class="string">"black"</span>
 
-coordinateTransform = Matrix.scale(<span class="number">1</span>, -<span class="number">1</span>, Point(<span class="number">0</span>, <span class="number">200</span>))
-
 <span class="comment"># TODO Dynamic width and height ?</span>
 canvas = PixieCanvas
   width: width
@@ -154,8 +152,8 @@ lastPosition = <span class="literal">null</span></code></pre>
   localPosition(e)
   {localX:x, localY:y} = e
 
-  x: (x/chunkX).floor()
-  y: (y/chunkY).floor()</code></pre>
+  x: (x/chunkX).floor().clamp(<span class="number">0</span>, size-<span class="number">1</span>)
+  y: (y/chunkY).floor().clamp(<span class="number">0</span>, size-<span class="number">1</span>)</code></pre>
 </div>
         </li>
         
