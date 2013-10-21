@@ -3,11 +3,12 @@ Series
 
 Draw a series of data.
 
+    drawSynthesis = require "./synthesis"
     PixieCanvas = require "pixie-canvas"
 
-    size = 10
-    width = 400
-    height = 400
+    size = 8
+    width = 200
+    height = 200
     series = [0...size].map -> 0
 
     chunkX = (width/size).floor()
@@ -15,6 +16,8 @@ Draw a series of data.
 
     backgroundColor = "white"
     foregroundColor = "black"
+
+    coordinateTransform = Matrix.scale(1, -1, Point(0, 200))
 
     # TODO Dynamic width and height ?
     canvas = PixieCanvas
@@ -29,6 +32,14 @@ Draw a series of data.
       text: JSON.stringify(series)
 
     $("body").append valuesElement
+    
+    $("body").append $ "<pre>",
+      text: "TODO: Fix synthesis chart"
+    
+    synthesisCanvas = PixieCanvas
+      width: width
+      height: height
+    $("body").append synthesisCanvas.element()
 
     active = false
     lastPosition = null
@@ -86,7 +97,8 @@ Set an x,y value of the series.
       # TODO: Make this an observer?
       redraw(x)
 
-      transformed = DFT(series.map (n) -> [n, 0])
+      input = series.map (n) -> [n, 0]
+      transformed = DFT(input)
       inverse = inverseDFT(transformed)
 
       valuesElement.text """
@@ -98,6 +110,10 @@ Set an x,y value of the series.
         Inverse DFT
         #{format inverse}
       """
+
+      synthesisCanvas.clear()
+      synthesisCanvas.withTransform Matrix.scale(width, height), (canvas) ->
+        drawSynthesis(canvas, transformed, input)
 
 Redraw a specific x value.
 
@@ -138,7 +154,7 @@ Local event position.
 
 DFT
 
-    {cos, sin, pow, E:e, sqrt} = Math
+    {cos, sin, sqrt} = Math
     τ = 2 * Math.PI
 
     DFT = (series) ->
