@@ -35,11 +35,12 @@
               <p>Draw a series of data.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">PixieCanvas = require <span class="string">"pixie-canvas"</span>
+            <div class="content"><pre><code class="lang-coffeescript">drawSynthesis = require <span class="string">"./synthesis"</span>
+PixieCanvas = require <span class="string">"pixie-canvas"</span>
 
-size = <span class="number">10</span>
-width = <span class="number">400</span>
-height = <span class="number">400</span>
+size = <span class="number">8</span>
+width = <span class="number">200</span>
+height = <span class="number">200</span>
 series = [<span class="number">0.</span>..size].map -&gt; <span class="number">0</span>
 
 chunkX = (width/size).floor()
@@ -47,6 +48,8 @@ chunkY = (height/size).floor()
 
 backgroundColor = <span class="string">"white"</span>
 foregroundColor = <span class="string">"black"</span>
+
+coordinateTransform = Matrix.scale(<span class="number">1</span>, -<span class="number">1</span>, Point(<span class="number">0</span>, <span class="number">200</span>))
 
 <span class="comment"># TODO Dynamic width and height ?</span>
 canvas = PixieCanvas
@@ -61,6 +64,14 @@ valuesElement = $ <span class="string">"&lt;pre&gt;"</span>,
   text: JSON.stringify(series)
 
 $(<span class="string">"body"</span>).append valuesElement
+
+$(<span class="string">"body"</span>).append $ <span class="string">"&lt;pre&gt;"</span>,
+  text: <span class="string">"TODO: Fix synthesis chart"</span>
+
+synthesisCanvas = PixieCanvas
+  width: width
+  height: height
+$(<span class="string">"body"</span>).append synthesisCanvas.element()
 
 active = <span class="literal">false</span>
 lastPosition = <span class="literal">null</span></code></pre>
@@ -163,7 +174,8 @@ lastPosition = <span class="literal">null</span></code></pre>
   <span class="comment"># TODO: Make this an observer?</span>
   redraw(x)
 
-  transformed = DFT(series.map (n) -&gt; [n, <span class="number">0</span>])
+  input = series.map (n) -&gt; [n, <span class="number">0</span>]
+  transformed = DFT(input)
   inverse = inverseDFT(transformed)
 
   valuesElement.text <span class="string">"""
@@ -174,7 +186,11 @@ lastPosition = <span class="literal">null</span></code></pre>
 
     Inverse DFT
     <span class="subst">#{format inverse}</span>
-  """</span></code></pre>
+  """</span>
+
+  synthesisCanvas.clear()
+  synthesisCanvas.withTransform Matrix.scale(width, height), (canvas) -&gt;
+    drawSynthesis(canvas, transformed, input)</code></pre>
 </div>
         </li>
         
@@ -262,7 +278,7 @@ lastPosition = <span class="literal">null</span></code></pre>
               <p>DFT</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">{cos, sin, pow, E:e, sqrt} = Math
+            <div class="content"><pre><code class="lang-coffeescript">{cos, sin, sqrt} = Math
 τ = <span class="number">2</span> * Math.PI
 
 <span class="function"><span class="title">DFT</span></span> = (series) -&gt;
