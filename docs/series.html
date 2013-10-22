@@ -184,6 +184,9 @@ lastPosition = <span class="literal">null</span></code></pre>
 
     Inverse DFT
     <span class="subst">#{format inverse}</span>
+
+    Polar
+    <span class="subst">#{format polar(transformed)}</span>
   """</span>
 
   synthesisCanvas.clear()
@@ -276,7 +279,7 @@ lastPosition = <span class="literal">null</span></code></pre>
               <p>DFT</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">{cos, sin, sqrt} = Math
+            <div class="content"><pre><code class="lang-coffeescript">{atan2, cos, sin, sqrt} = Math
 τ = <span class="number">2</span> * Math.PI
 
 <span class="function"><span class="title">DFT</span></span> = (series) -&gt;
@@ -299,7 +302,14 @@ lastPosition = <span class="literal">null</span></code></pre>
 <span class="function"><span class="title">inverseDFT</span></span> = (series) -&gt;
   <span class="keyword">do</span> (x = DFT(series)) -&gt;
     x.push(x.shift())
-    x.reverse()</code></pre>
+    x.reverse()
+
+<span class="function"><span class="title">polar</span></span> = (series) -&gt;
+  series.map ([r, i]) -&gt;
+    [
+      sqrt(r * r + i * i)
+      atan2(i, r) / τ
+    ]</code></pre>
 </div>
         </li>
         
