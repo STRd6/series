@@ -107,6 +107,9 @@ Set an x,y value of the series.
 
         Inverse DFT
         #{format inverse}
+
+        Polar
+        #{format polar(transformed)}
       """
 
       synthesisCanvas.clear()
@@ -152,7 +155,7 @@ Local event position.
 
 DFT
 
-    {cos, sin, sqrt} = Math
+    {atan2, cos, sin, sqrt} = Math
     τ = 2 * Math.PI
 
     DFT = (series) ->
@@ -176,6 +179,13 @@ DFT
       do (x = DFT(series)) ->
         x.push(x.shift())
         x.reverse()
+
+    polar = (series) ->
+      series.map ([r, i]) ->
+        [
+          sqrt(r * r + i * i)
+          atan2(i, r) / τ
+        ]
 
 Format for output
 
