@@ -38,27 +38,32 @@ Draw a series of data.
 
     $("body").append $ "<style>",
       text: require "./style"
+      
+    addEvents = (canvas) ->
 
 When we click within the canvas set the value for the position we clicked at.
 
-    canvas.on "touch", (position) ->
-      setValue(position.scale(size).floor())
+      canvas.on "touch", (position) ->
+        setValue(position.scale(size).floor())
 
 When the mouse moves apply a change for each x value in the intervening positions.
 
-    canvas.on "move", (position, lastPosition) ->
-      position = position.scale(size).floor()
-      lastPosition = lastPosition.scale(size).floor()
+      canvas.on "move", (position, lastPosition) ->
+        position = position.scale(size).floor()
+        lastPosition = lastPosition.scale(size).floor()
+  
+        delta = position.subtract(lastPosition)
+  
+        delta.x.abs().times (x) ->
+          # Starting from the last position, moving to the current position
+          p = Point.interpolate(lastPosition, position, x / delta.x).floor()
+  
+          setValue p
+  
+        setValue(position)
 
-      delta = position.subtract(lastPosition)
-
-      delta.x.abs().times (x) ->
-        # Starting from the last position, moving to the current position
-        p = Point.interpolate(lastPosition, position, x / delta.x).floor()
-
-        setValue p
-
-      setValue(position)
+    addEvents(canvas)
+    addEvents(synthesisCanvas)
 
 Set an x,y value of the series.
 

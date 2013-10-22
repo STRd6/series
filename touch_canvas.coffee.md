@@ -59,12 +59,12 @@ Local event position.
 
     localPosition = (e) ->
       $currentTarget = $(e.currentTarget)
-      parentOffset = $currentTarget.parent().offset()
+      offset = $currentTarget.offset()
 
       width = $currentTarget.width()
       height = $currentTarget.height()
 
       Point(
-        ((e.pageX - parentOffset.left) / width).clamp(0, MAX)
-        ((e.pageY - parentOffset.top) / height).clamp(0, MAX)
+        ((e.pageX - offset.left) / width).clamp(0, MAX)
+        ((e.pageY - offset.top) / height).clamp(0, MAX)
       )
