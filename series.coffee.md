@@ -4,7 +4,7 @@ Series
 Draw a series of data.
 
     drawSynthesis = require "./synthesis"
-    PixieCanvas = require "pixie-canvas"
+    TouchCanvas = require "./touch_canvas"
 
     size = 8
     width = 200
@@ -18,7 +18,7 @@ Draw a series of data.
     foregroundColor = "black"
 
     # TODO Dynamic width and height ?
-    canvas = PixieCanvas
+    canvas = TouchCanvas
       width: width
       height: height
 
@@ -26,7 +26,7 @@ Draw a series of data.
 
     $("body").append element
 
-    synthesisCanvas = PixieCanvas
+    synthesisCanvas = TouchCanvas
       width: width
       height: height
     $("body").append synthesisCanvas.element()
@@ -39,53 +39,26 @@ Draw a series of data.
     $("body").append $ "<style>",
       text: require "./style"
 
-    active = false
-    lastPosition = null
-
 When we click within the canvas set the value for the position we clicked at.
 
-    $(element).on "mousedown", (e) ->
-      active = true
-
-      position = getPosition(e)
-      setValue(position)
-      lastPosition = position
+    canvas.on "touch", (position) ->
+      setValue(position.scale(size).floor())
 
 When the mouse moves apply a change for each x value in the intervening positions.
 
-    $(element).on "mousemove", (e) ->
-      if active
-        position = getPosition(e)
+    canvas.on "move", (position, lastPosition) ->
+      position = position.scale(size).floor()
+      lastPosition = lastPosition.scale(size).floor()
 
-        deltaX = position.x - lastPosition.x
-        deltaY = position.y - lastPosition.y
-        signX = deltaX.sign()
+      delta = position.subtract(lastPosition)
 
-        [lastPosition.x..position.x].map (x) ->
-          if delta = position.x - x
-            y = -((delta * deltaY) / deltaX).floor()
-          else
-            y = 0
+      delta.x.abs().times (x) ->
+        # Starting from the last position, moving to the current position
+        p = Point.interpolate(lastPosition, position, x / delta.x).floor()
 
-          setValue
-            x: x
-            y: position.y + y
+        setValue p
 
-        lastPosition = position
-
-Whenever the mouse button is released, deactivate.
-
-    $(document).on "mouseup", (e) ->
-      active = false
-
-Get the local position from a mouse event within the canvas.
-
-    getPosition = (e) ->
-      localPosition(e)
-      {localX:x, localY:y} = e
-
-      x: (x/chunkX).floor().clamp(0, size-1)
-      y: (y/chunkY).floor().clamp(0, size-1)
+      setValue(position)
 
 Set an x,y value of the series.
 
@@ -139,19 +112,6 @@ Draw the initial values.
 
     series.map (y, x) ->
       redraw(x)
-
-Helpers
--------
-
-Local event position.
-
-    localPosition = (e) ->
-      parentOffset = $(e.currentTarget).parent().offset()
-
-      e.localX = e.pageX - parentOffset.left
-      e.localY = e.pageY - parentOffset.top
-
-      return e
 
 DFT
 
