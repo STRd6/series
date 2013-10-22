@@ -69,7 +69,9 @@ valuesElement = $ <span class="string">"&lt;pre&gt;"</span>,
 $(<span class="string">"body"</span>).append valuesElement
 
 $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&gt;"</span>,
-  text: require <span class="string">"./style"</span></code></pre>
+  text: require <span class="string">"./style"</span>
+
+<span class="function"><span class="title">addEvents</span></span> = (canvas) -&gt;</code></pre>
 </div>
         </li>
         
@@ -82,8 +84,8 @@ $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&g
               <p>When we click within the canvas set the value for the position we clicked at.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">canvas.<span class="literal">on</span> <span class="string">"touch"</span>, (position) -&gt;
-  setValue(position.scale(size).floor())</code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">  canvas.<span class="literal">on</span> <span class="string">"touch"</span>, (position) -&gt;
+    setValue(position.scale(size).floor())</code></pre>
 </div>
         </li>
         
@@ -96,19 +98,22 @@ $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&g
               <p>When the mouse moves apply a change for each x value in the intervening positions.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">canvas.<span class="literal">on</span> <span class="string">"move"</span>, (position, lastPosition) -&gt;
-  position = position.scale(size).floor()
-  lastPosition = lastPosition.scale(size).floor()
+            <div class="content"><pre><code class="lang-coffeescript">  canvas.<span class="literal">on</span> <span class="string">"move"</span>, (position, lastPosition) -&gt;
+    position = position.scale(size).floor()
+    lastPosition = lastPosition.scale(size).floor()
 
-  delta = position.subtract(lastPosition)
+    delta = position.subtract(lastPosition)
 
-  delta.x.abs().times (x) -&gt;
-    <span class="comment"># Starting from the last position, moving to the current position</span>
-    p = Point.interpolate(lastPosition, position, x / delta.x).floor()
+    delta.x.abs().times (x) -&gt;
+      <span class="comment"># Starting from the last position, moving to the current position</span>
+      p = Point.interpolate(lastPosition, position, x / delta.x).floor()
 
-    setValue p
+      setValue p
 
-  setValue(position)</code></pre>
+    setValue(position)
+
+addEvents(canvas)
+addEvents(synthesisCanvas)</code></pre>
 </div>
         </li>
         

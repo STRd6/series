@@ -155,14 +155,14 @@ may get a little fast and loose with exiting the canvas, so let&#39;s play it sa
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">localPosition</span></span> = (e) -&gt;
   $currentTarget = $(e.currentTarget)
-  parentOffset = $currentTarget.parent().offset()
+  offset = $currentTarget.offset()
 
   width = $currentTarget.width()
   height = $currentTarget.height()
 
   Point(
-    ((e.pageX - parentOffset.left) / width).clamp(<span class="number">0</span>, MAX)
-    ((e.pageY - parentOffset.top) / height).clamp(<span class="number">0</span>, MAX)
+    ((e.pageX - offset.left) / width).clamp(<span class="number">0</span>, MAX)
+    ((e.pageY - offset.top) / height).clamp(<span class="number">0</span>, MAX)
   )</code></pre>
 </div>
         </li>
