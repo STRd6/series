@@ -35,8 +35,10 @@
               <p>Draw a series of data.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">drawSynthesis = require <span class="string">"./synthesis"</span>
-TouchCanvas = require <span class="string">"./touch_canvas"</span>
+            <div class="content"><pre><code class="lang-coffeescript">require <span class="string">"cornerstone"</span>
+
+drawSynthesis = require <span class="string">"./synthesis"</span>
+TouchCanvas = require <span class="string">"touch-canvas"</span>
 
 size = <span class="number">8</span>
 width = <span class="number">200</span>
@@ -84,8 +86,11 @@ $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&g
               <p>When we click within the canvas set the value for the position we clicked at.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  canvas.<span class="literal">on</span> <span class="string">"touch"</span>, (position) -&gt;
-    setValue(position.scale(size).floor())</code></pre>
+            <div class="content"><pre><code class="lang-coffeescript">  lastPosition = <span class="literal">null</span>
+
+  canvas.<span class="literal">on</span> <span class="string">"touch"</span>, (position) -&gt;
+    lastPosition = Point(position).scale(size).floor()
+    setValue(lastPosition)</code></pre>
 </div>
         </li>
         
@@ -98,9 +103,8 @@ $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&g
               <p>When the mouse moves apply a change for each x value in the intervening positions.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  canvas.<span class="literal">on</span> <span class="string">"move"</span>, (position, lastPosition) -&gt;
-    position = position.scale(size).floor()
-    lastPosition = lastPosition.scale(size).floor()
+            <div class="content"><pre><code class="lang-coffeescript">  canvas.<span class="literal">on</span> <span class="string">"move"</span>, (position) -&gt;
+    position = Point(position).scale(size).floor()
 
     delta = position.subtract(lastPosition)
 
@@ -110,6 +114,7 @@ $(<span class="string">"body"</span>).append $ <span class="string">"&lt;style&g
 
       setValue p
 
+    lastPosition = position
     setValue(position)
 
 addEvents(canvas)
@@ -264,10 +269,142 @@ addEvents(synthesisCanvas)</code></pre>
         
     </ul>
   </div>
-  <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
-<script src="http://strd6.github.io/require/v0.2.2.js"></script>
-<script src="http://strd6.github.io/interactive/v0.8.0.js"></script>
-<script src="http://strd6.github.io/tempest/javascripts/envweb.js?"></script><script src="package.js"></script>
+  <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.0.min.js"></script><script>
+  (function() {
+  var ErrorReporter, bindUpdates, createEditor, exec, findInteractiveElements, readShebang, runners;
+
+  createEditor = function(code, shebang, section) {
+    var annotationElement, contentElement, editorElement, exampleSection, runtimeElement;
+    exampleSection = $("<li>", {
+      "class": "example"
+    });
+    annotationElement = $("<div>", {
+      "class": "annotation"
+    });
+    editorElement = $("<textarea>", {
+      "class": "annotation",
+      text: code
+    });
+    contentElement = $("<div>", {
+      "class": "content"
+    });
+    runtimeElement = $("<div>", {
+      "class": "output"
+    });
+    contentElement.append(runtimeElement);
+    annotationElement.append(editorElement);
+    exampleSection.append(annotationElement);
+    exampleSection.append(contentElement);
+    section.after(exampleSection);
+    return bindUpdates(shebang, editorElement, runtimeElement);
+  };
+
+  bindUpdates = function(shebang, editorElement, runtimeElement) {
+    return editorElement.on("keyup", function() {
+      var e, report, source;
+      report = ErrorReporter(editorElement);
+      source = editorElement.val();
+      try {
+        runners[shebang]({
+          editorElement: editorElement,
+          source: source,
+          runtimeElement: runtimeElement
+        });
+        return report.clear();
+      } catch (_error) {
+        e = _error;
+        return report(e);
+      }
+    });
+  };
+
+  readShebang = function(source) {
+    var match;
+    if (match = source.match(/^\#\! (.*)\n/)) {
+      return match[1];
+    }
+  };
+
+  ErrorReporter = function(editor) {
+    var reporter;
+    reporter = function(error) {
+      var errorParagraph;
+      if (editor.next().is("p.error")) {
+        return editor.next().text(error);
+      } else {
+        errorParagraph = $("<p>", {
+          "class": "error",
+          text: error.toString()
+        });
+        return editor.after(errorParagraph);
+      }
+    };
+    reporter.clear = function() {
+      if (editor.next().is("p.error")) {
+        return editor.next().remove();
+      }
+    };
+    return reporter;
+  };
+
+  findInteractiveElements = function() {
+    return $("blockquote > pre > code").each(function() {
+      var blockQuoteElement, code, codeElement, sectionElement, shebang;
+      codeElement = $(this);
+      code = codeElement.text();
+      if (shebang = readShebang(code)) {
+        if (!runners[shebang]) {
+          return;
+        }
+        code = code.split("\n").slice(1).join("\n");
+        blockQuoteElement = codeElement.parent().parent();
+        sectionElement = blockQuoteElement.parent().parent();
+        blockQuoteElement.remove();
+        return createEditor(code, shebang, sectionElement);
+      }
+    });
+  };
+
+  runners = {};
+
+  (typeof window !== "undefined" && window !== null ? window : global).Interactive = {
+    register: function(name, runner) {
+      runners[name] = runner;
+      findInteractiveElements();
+      return $('#container').on('keyup', 'textarea', function() {
+        $(this).height(0);
+        return $(this).height(this.scrollHeight);
+      }).find('textarea').keyup();
+    }
+  };
+
+  exec = function(_arg) {
+    var code, editorElement, runtimeElement, source;
+    source = _arg.source, code = _arg.code, editorElement = _arg.editorElement, runtimeElement = _arg.runtimeElement;
+    runtimeElement.remove();
+    editorElement.replaceWith($("<pre>", {
+      text: source
+    }));
+    return setTimeout(function() {
+      return Function(code)();
+    }, 0);
+  };
+
+  $(function() {
+    Interactive.register("setup", function(params) {
+      params.code = CoffeeScript.compile(params.source);
+      return exec(params);
+    });
+    return Interactive.register("setup-js", function(params) {
+      params.code = params.source;
+      return exec(params);
+    });
+  });
+
+}).call(this);
+
+</script><script src="package.js"></script>
 </body>
 </html>
