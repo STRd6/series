@@ -2,9 +2,10 @@ Series
 ======
 
 Draw a series of data.
+    require "cornerstone"
 
     drawSynthesis = require "./synthesis"
-    TouchCanvas = require "./touch_canvas"
+    TouchCanvas = require "touch-canvas"
 
     size = 8
     width = 200
@@ -38,28 +39,31 @@ Draw a series of data.
 
     $("body").append $ "<style>",
       text: require "./style"
-      
+
     addEvents = (canvas) ->
 
 When we click within the canvas set the value for the position we clicked at.
 
+      lastPosition = null
+
       canvas.on "touch", (position) ->
-        setValue(position.scale(size).floor())
+        lastPosition = Point(position).scale(size).floor()
+        setValue(lastPosition)
 
 When the mouse moves apply a change for each x value in the intervening positions.
 
-      canvas.on "move", (position, lastPosition) ->
-        position = position.scale(size).floor()
-        lastPosition = lastPosition.scale(size).floor()
-  
+      canvas.on "move", (position) ->
+        position = Point(position).scale(size).floor()
+
         delta = position.subtract(lastPosition)
-  
+
         delta.x.abs().times (x) ->
           # Starting from the last position, moving to the current position
           p = Point.interpolate(lastPosition, position, x / delta.x).floor()
-  
+
           setValue p
-  
+
+        lastPosition = position
         setValue(position)
 
     addEvents(canvas)
