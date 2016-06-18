@@ -7,7 +7,7 @@ module.exports = DFT =
     N = series.length
     rootN = sqrt(N)
     divRootN = (x) -> x / rootN
-  
+
     [0...N].map (k) ->
       series.map ([x, y], n) ->
         θ = -τ * k * n / N
