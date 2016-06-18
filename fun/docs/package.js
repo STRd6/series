@@ -229,7 +229,7 @@
     },
     "dft.coffee": {
       "path": "dft.coffee",
-      "content": "\n{atan2, cos, sin, sqrt} = Math\nτ = 2 * Math.PI\n\nmodule.exports = DFT =\n  discreteFourierTransform: (series) ->\n    N = series.length\n    rootN = sqrt(N)\n    divRootN = (x) -> x / rootN\n  \n    [0...N].map (k) ->\n      series.map ([x, y], n) ->\n        θ = -τ * k * n / N\n        [\n          x *  cos(θ) + y *  sin(θ)\n          x * -sin(θ) + y * -cos(θ)\n        ]\n      .reduce((a, b) ->\n        [a[0] + b[0], a[1] + b[1]]\n      , [0, 0])\n      .map divRootN\n\n  inverseDiscreteFourierTransform: (series) ->\n    x = DFT.discreteFourierTransform(series)\n    x.push(x.shift())\n    x.reverse()\n\n    return x\n\n  polar: (series) ->\n    series.map ([r, i]) ->\n      [\n        sqrt(r * r + i * i)\n        atan2(i, r) / τ\n      ]\n",
+      "content": "\n{atan2, cos, sin, sqrt} = Math\nτ = 2 * Math.PI\n\nmodule.exports = DFT =\n  discreteFourierTransform: (series) ->\n    N = series.length\n    rootN = sqrt(N)\n    divRootN = (x) -> x / rootN\n\n    [0...N].map (k) ->\n      series.map ([x, y], n) ->\n        θ = -τ * k * n / N\n        [\n          x *  cos(θ) + y *  sin(θ)\n          x * -sin(θ) + y * -cos(θ)\n        ]\n      .reduce((a, b) ->\n        [a[0] + b[0], a[1] + b[1]]\n      , [0, 0])\n      .map divRootN\n\n  inverseDiscreteFourierTransform: (series) ->\n    x = DFT.discreteFourierTransform(series)\n    x.push(x.shift())\n    x.reverse()\n\n    return x\n\n  polar: (series) ->\n    series.map ([r, i]) ->\n      [\n        sqrt(r * r + i * i)\n        atan2(i, r) / τ\n      ]\n",
       "mode": "100644"
     }
   },
