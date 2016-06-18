@@ -2,7 +2,10 @@ Series
 ======
 
 Draw a series of data.
+
     require "cornerstone"
+
+    {discreteFourierTransform, inverseDiscreteFourierTransform, polar} = require "./dft"
 
     drawSynthesis = require "./synthesis"
     TouchCanvas = require "touch-canvas"
@@ -78,8 +81,8 @@ Set an x,y value of the series.
       redraw(x)
 
       input = series.map (n) -> [n, 0]
-      transformed = DFT(input)
-      inverse = inverseDFT(transformed)
+      transformed = discreteFourierTransform(input)
+      inverse = inverseDiscreteFourierTransform(transformed)
 
       valuesElement.text """
         #{JSON.stringify(series)}
@@ -122,39 +125,6 @@ Draw the initial values.
     series.map (y, x) ->
       redraw(x)
 
-DFT
-
-    {atan2, cos, sin, sqrt} = Math
-    τ = 2 * Math.PI
-
-    DFT = (series) ->
-      N = series.length
-      rootN = sqrt(N)
-      divRootN = (x) -> x / rootN
-
-      [0...N].map (k) ->
-        series.map ([x, y], n) ->
-          theta = -τ * k * n / N
-          [
-            x *  cos(theta) + y *  sin(theta)
-            x * -sin(theta) + y * -cos(theta)
-          ]
-        .reduce((a, b) ->
-          [a[0] + b[0], a[1] + b[1]]
-        , [0, 0])
-        .map divRootN
-
-    inverseDFT = (series) ->
-      do (x = DFT(series)) ->
-        x.push(x.shift())
-        x.reverse()
-
-    polar = (series) ->
-      series.map ([r, i]) ->
-        [
-          sqrt(r * r + i * i)
-          atan2(i, r) / τ
-        ]
 
 Format for output
 
