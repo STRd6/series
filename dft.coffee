@@ -3,6 +3,7 @@
 τ = 2 * Math.PI
 
 module.exports = DFT =
+  # Transform a series of complex values
   discreteFourierTransform: (series) ->
     N = series.length
     rootN = sqrt(N)
@@ -26,6 +27,19 @@ module.exports = DFT =
     x.reverse()
 
     return x
+
+  # Transform a series of real values
+  # https://en.wikipedia.org/wiki/Discrete_Hartley_transform
+  discreteHartleyTransform: (series) ->
+    N = series.length
+
+    [0...N].map (k) ->
+      series.map (x, n) ->
+        θ = -τ * k * n / N
+        x * (cos(θ) + sin(θ))
+      .reduce((a, b) ->
+        a + b
+      , 0) / sqrt(N)
 
   polar: (series) ->
     series.map ([r, i]) ->
