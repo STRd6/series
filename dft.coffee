@@ -13,8 +13,8 @@ module.exports = DFT =
       series.map ([x, y], n) ->
         θ = -τ * k * n / N
         [
-          x *  cos(θ) + y *  sin(θ)
-          x * -sin(θ) + y * -cos(θ)
+          x *  cos(θ) + y * sin(θ)
+          x * -sin(θ) + y * cos(θ)
         ]
       .reduce((a, b) ->
         [a[0] + b[0], a[1] + b[1]]
