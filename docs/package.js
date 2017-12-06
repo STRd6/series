@@ -1,11 +1,11 @@
 (function(pkg) {
   (function() {
-  var annotateSourceURL, cacheFor, circularGuard, defaultEntryPoint, fileSeparator, generateRequireFn, global, isPackage, loadModule, loadPackage, loadPath, normalizePath, rootModule, startsWith,
+  var annotateSourceURL, cacheFor, circularGuard, defaultEntryPoint, fileSeparator, generateRequireFn, global, isPackage, loadModule, loadPackage, loadPath, normalizePath, publicAPI, rootModule, startsWith,
     __slice = [].slice;
 
   fileSeparator = '/';
 
-  global = window;
+  global = self;
 
   defaultEntryPoint = "main";
 
@@ -70,11 +70,14 @@
   };
 
   loadModule = function(pkg, path) {
-    var args, context, dirname, file, module, program, values;
+    var args, content, context, dirname, file, module, program, values;
     if (!(file = pkg.distribution[path])) {
       throw "Could not find file at " + path + " in " + pkg.name;
     }
-    program = annotateSourceURL(file.content, pkg, path);
+    if ((content = file.content) == null) {
+      throw "Malformed package. No content for file at " + path + " in " + pkg.name;
+    }
+    program = annotateSourceURL(content, pkg, path);
     dirname = path.split(fileSeparator).slice(0, -1).join(fileSeparator);
     module = {
       path: dirname,
@@ -106,6 +109,7 @@
   };
 
   generateRequireFn = function(pkg, module) {
+    var fn;
     if (module == null) {
       module = rootModule;
     }
@@ -115,9 +119,11 @@
     if (pkg.scopedName == null) {
       pkg.scopedName = "ROOT";
     }
-    return function(path) {
+    fn = function(path) {
       var otherPackage;
-      if (isPackage(path)) {
+      if (typeof path === "object") {
+        return loadPackage(path);
+      } else if (isPackage(path)) {
         if (!(otherPackage = pkg.dependencies[path])) {
           throw "Package: " + path + " not found.";
         }
@@ -132,14 +138,26 @@
         return loadPath(module, pkg, path);
       }
     };
+    fn.packageWrapper = publicAPI.packageWrapper;
+    fn.executePackageWrapper = publicAPI.executePackageWrapper;
+    return fn;
+  };
+
+  publicAPI = {
+    generateFor: generateRequireFn,
+    packageWrapper: function(pkg, code) {
+      return ";(function(PACKAGE) {\n  var src = " + (JSON.stringify(PACKAGE.distribution.main.content)) + ";\n  var Require = new Function(\"PACKAGE\", \"return \" + src)({distribution: {main: {content: src}}});\n  var require = Require.generateFor(PACKAGE);\n  " + code + ";\n})(" + (JSON.stringify(pkg, null, 2)) + ");";
+    },
+    executePackageWrapper: function(pkg) {
+      return publicAPI.packageWrapper(pkg, "require('./" + pkg.entryPoint + "')");
+    },
+    loadPackage: loadPackage
   };
 
   if (typeof exports !== "undefined" && exports !== null) {
-    exports.generateFor = generateRequireFn;
+    module.exports = publicAPI;
   } else {
-    global.Require = {
-      generateFor: generateRequireFn
-    };
+    global.Require = publicAPI;
   }
 
   startsWith = function(string, prefix) {
@@ -160,9 +178,10 @@
     return "" + program + "\n//# sourceURL=" + pkg.scopedName + "/" + path;
   };
 
+  return publicAPI;
+
 }).call(this);
 
-//# sourceURL=main.coffee
   window.require = Require.generateFor(pkg);
 })({
   "source": {
@@ -186,7 +205,7 @@
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.1.0\"\nentryPoint: \"series\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  \"touch-canvas\": \"distri/touch-canvas:v0.3.1\"\n  cornerstone: \"distri/cornerstone:v0.2.2-pre.0\"",
+      "content": "version: \"0.1.0\"\nentryPoint: \"series\"\npublish:\n  s3:\n    basePath: \"public/danielx.net\"\nremoteDependencies: [\n  \"https://code.jquery.com/jquery-1.11.0.min.js\"\n]\ndependencies:\n  \"touch-canvas\": \"distri/touch-canvas:v0.3.1\"\n  cornerstone: \"distri/cornerstone:v0.2.2-pre.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -217,7 +236,7 @@
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.1.0\",\"entryPoint\":\"series\",\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"touch-canvas\":\"distri/touch-canvas:v0.3.1\",\"cornerstone\":\"distri/cornerstone:v0.2.2-pre.0\"}};",
+      "content": "module.exports = {\"version\":\"0.1.0\",\"entryPoint\":\"series\",\"publish\":{\"s3\":{\"basePath\":\"public/danielx.net\"}},\"remoteDependencies\":[\"https://code.jquery.com/jquery-1.11.0.min.js\"],\"dependencies\":{\"touch-canvas\":\"distri/touch-canvas:v0.3.1\",\"cornerstone\":\"distri/cornerstone:v0.2.2-pre.0\"}};",
       "type": "blob"
     },
     "series": {
@@ -227,7 +246,7 @@
     },
     "style": {
       "path": "style",
-      "content": "module.exports = \"canvas {\\n  margin-right: 1em;\\n  border: 1px solid black;\\n}\";",
+      "content": "module.exports = \"canvas {\\n  margin-right: 1em;\\n  border: 1px solid #000;\\n}\\n\";",
       "type": "blob"
     },
     "synthesis": {
@@ -237,7 +256,23 @@
     }
   },
   "progenitor": {
-    "url": "http://www.danielx.net/editor/"
+    "url": "https://danielx.net/editor/"
+  },
+  "config": {
+    "version": "0.1.0",
+    "entryPoint": "series",
+    "publish": {
+      "s3": {
+        "basePath": "public/danielx.net"
+      }
+    },
+    "remoteDependencies": [
+      "https://code.jquery.com/jquery-1.11.0.min.js"
+    ],
+    "dependencies": {
+      "touch-canvas": "distri/touch-canvas:v0.3.1",
+      "cornerstone": "distri/cornerstone:v0.2.2-pre.0"
+    }
   },
   "version": "0.1.0",
   "entryPoint": "series",
